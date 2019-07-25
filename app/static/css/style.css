@@ -1,0 +1,18 @@
+.logo{color:#1d36cb;font-weight:800;}
+.welcome{color:#c48c49;}
+.table{margin-top:10px;border-bottom:1px solid #ddd;}
+tr td{padding:0 10px;}
+
+.uptable{margin-top:20px;margin-left:20px;}
+.showcon ul{float:left;height:226px;}
+.showcon ul li{width:180px;overflow:hidden;}
+.showcon .header{background:#d9edf7;color:#31708f;}
+.num_con{font-size:18px;color:#1d36cb;padding:50px;}
+
+.data{margin-top:5px;}
+.data th,td{width:80px;padding:2px 5px;}
+.data th:nth-child(1){width:100px;}
+.data th:nth-child(2){width:180px;}
+.data tbody tr:last-child th{color:red;}
+
+.forms{padding-left:50px;}
