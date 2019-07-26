@@ -16,13 +16,16 @@
         <li>
             <a class="logo" href="/">报表分析</a>
         </li>
+        <li>
+            <a  href="/">首页</a>
+        </li>
     </ul>
 
     {% with messages = get_flashed_messages() %}
     {% if messages %}
         <ul>
             {% for message in messages %}
-                <li>{{message}}</li>
+                <li class="alert alert-warning" role="alert">{{message}}</li>
             {% endfor %}
         </ul>
     {% endif %}

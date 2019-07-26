@@ -1,3 +1,4 @@
+ul li{list-style:none;}
 .logo{color:#1d36cb;font-weight:800;}
 .welcome{color:#c48c49;}
 .table{margin-top:10px;border-bottom:1px solid #ddd;}
@@ -16,3 +17,6 @@ tr td{padding:0 10px;}
 .data tbody tr:last-child th{color:red;}
 
 .forms{padding-left:50px;}
+.help-block span{color:blue;}
+.row{padding:20px 50px;}
+.help-block span em{font-style:normal;color:red;}

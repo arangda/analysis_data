@@ -2,9 +2,11 @@
 {% block content %}
 <div class="row">
     <div class="show_table col-md-9">
+
             {% for table in baidu %}
                 {{ table|safe }}
             {% endfor %}
+
             {% for table in sogou %}
                 {{ table|safe }}
             {% endfor %}
