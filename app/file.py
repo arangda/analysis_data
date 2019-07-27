@@ -15,9 +15,10 @@ class file(object):
         # 下面列表和uploads中的子目录，及上传表单name值相关
         self.dirs = ['swt', 'baidu', 'sogou', 'shenma', '360']
         self.date = time.strftime("%Y-%m-%d",time.localtime())
-        self.read_swt = self.read_swts()
+        self.read_swt = None
         self.error_exist = '<em>文件不存在,请先上传文件</em>'
         self.timelist = []
+        self.can_analysis = "no"
 
     def allowed_file(self,filename):
         return '.' in filename and \
@@ -109,14 +110,18 @@ class file(object):
         newfpath = os.path.join(fdir,filename)
         os.rename(fpath,newfpath)
 
-    def walk(self, dirs):
+    def walk(self, dirs, clear='no'):
         dt = {}
         for dr in dirs:
             newdir = os.path.join(UPLOAD_FOLDER, dr+'/')
-            if os.path.isdir(newdir):
+            if os.path.exists(newdir):
                 #此处子判断觉得也许可以更好解决
                 if os.listdir(newdir):
-                    dt[dr] = os.listdir(newdir)
+                    if clear == "no":
+                        dt[dr] = os.listdir(newdir)
+                    elif clear == "yes":
+                        for d in os.listdir(newdir):
+                            os.remove(os.path.join(newdir,d))
                 else:
                     dt[dr] = [self.error_exist]
             else:
@@ -125,11 +130,14 @@ class file(object):
     #读取每个文件前先判断是否存在
     def if_file(self,name):
         filepath = UPLOAD_FOLDER + name+'/'
-        if os.listdir(filepath):
-            file = UPLOAD_FOLDER + name+'/' + os.listdir(filepath)[0]
-            return {"filepath":file}
+        if os.path.exists(filepath):
+            if os.listdir(filepath):
+                file = UPLOAD_FOLDER + name+'/' + os.listdir(filepath)[0]
+                return {"filepath":file}
+            else:
+                return {"error":"不存在这个文件"}
         else:
-            return {"error":"不存在这个文件"}
+            os.mkdir(filepath)
     def read_swts(self):
         res = self.if_file('swt')
         if 'filepath' in res:

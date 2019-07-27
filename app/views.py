@@ -28,6 +28,9 @@ def index():
         elif request.form.get('upload'):
             f.upload(f.dirs)
             return redirect(url_for('index'))
+    if request.args.get('clear'):
+            f.walk(f.dirs, clear='yes')
+            return jsonify("yes")
     flash(msg)
     return render_template('index.html',
                            now=int(time.time()),
@@ -50,7 +53,7 @@ def data():
     if is_swt:
         return redirect(url_for('index'))
     else:
-        dswt = f.read_swt
+        f.read_swt = f.read_swts()
     #如果没有上传搜索引擎的表，则自定义一个dataframe
     if is_baidu:
         baidu = pd.DataFrame({'账户':'0','展现':0.0, '点击':0.0,'消费':0.0,'对话':0.0, '转出':0.0},index=['百度汇总'])
