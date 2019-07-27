@@ -8,7 +8,6 @@ import numpy as np
 
 from app import app
 from config import ALLOWED_EXTENSIONS, UPLOAD_FOLDER
-from pandas.api.types import is_numeric_dtype
 
 class file(object):
 
@@ -26,7 +25,7 @@ class file(object):
 
     def upload(self, dirs):
         for dr in dirs:
-            newdir = os.path.join(app.config['UPLOAD_FOLDER'], dr+'/')
+            newdir = os.path.join(UPLOAD_FOLDER, dr+'/')
             if os.path.isdir(newdir):
                 file = request.files.get(dr)
                 if file and self.allowed_file(file.filename):
@@ -43,7 +42,7 @@ class file(object):
 
             else:
                 os.mkdir(newdir)
-        if len(set(self.timelist)) != 1:
+        if len(set(self.timelist)) > 1:
             flash("各个表可能不是同一天的")
 
     def is_right(self,fdir,fname,dir):
@@ -113,7 +112,7 @@ class file(object):
     def walk(self, dirs):
         dt = {}
         for dr in dirs:
-            newdir = os.path.join(app.config['UPLOAD_FOLDER'], dr+'/')
+            newdir = os.path.join(UPLOAD_FOLDER, dr+'/')
             if os.path.isdir(newdir):
                 #此处子判断觉得也许可以更好解决
                 if os.listdir(newdir):
