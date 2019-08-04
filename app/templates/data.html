@@ -1,22 +1,44 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="row">
-    <div class="show_table col-md-9">
+    <div class="show_table col-md-6">
 
-            {% for table in baidu %}
+            {% for table in baidu_account %}
                 {{ table|safe }}
             {% endfor %}
 
-            {% for table in sogou %}
+            {% for table in sogou_account %}
                 {{ table|safe }}
             {% endfor %}
-            {% for table in shenma %}
+            {% for table in shenma_account %}
                 {{ table|safe }}
             {% endfor %}
-            {% for table in d360 %}
+            {% for table in d360_account %}
                 {{ table|safe }}
             {% endfor %}
-            {% for table in dhz %}
+            {% for table in dhz_account %}
+                {{ table|safe }}
+            {% endfor %}
+            {% for table in dswt %}
+                {{ table|safe }}
+            {% endfor %}
+    </div>
+    <div class="show_table col-md-6">
+
+            {% for table in baidu_plan %}
+                {{ table|safe }}
+            {% endfor %}
+
+            {% for table in sogou_plan %}
+                {{ table|safe }}
+            {% endfor %}
+            {% for table in shenma_plan %}
+                {{ table|safe }}
+            {% endfor %}
+            {% for table in d360_plan %}
+                {{ table|safe }}
+            {% endfor %}
+            {% for table in dhz_plan %}
                 {{ table|safe }}
             {% endfor %}
             {% for table in dswt %}
