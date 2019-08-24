@@ -1,8 +1,14 @@
+import sys
+
 CSRF_ENABLED = True
 SECRET_KEY = "YESIDO"
 
 import os
-basedir = os.path.abspath(os.path.dirname(__file__))
+#basedir = os.path.abspath(os.path.dirname(__file__))
+if getattr(sys, 'frozen', False):
+    basedir = os.path.dirname(sys.executable)
+else :
+    basedir = os.path.abspath(os.path.dirname(__file__))
 
 
 #上传xls设置
