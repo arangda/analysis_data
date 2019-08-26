@@ -9,7 +9,7 @@ if hasattr(sys, 'frozen'):
 
 from PyQt5 import QtCore
 from PyQt5.QtWidgets import QWidget, QPushButton, QApplication, QVBoxLayout, QMessageBox, QLabel
-
+from run import do
 
 class WindowClass(QWidget):
     def __init__(self,parent=None):
@@ -36,12 +36,12 @@ class WindowClass(QWidget):
                                  "font-family:宋体;}"
                                  )
         QMessageBox.about(self, '程序', '已经启动了')
-        #do()
+        do()
 
 
-        filepath = os.path.join(basedir, 'run.py')
-        cmd = 'python -i ' + filepath
-        subprocess.call(cmd,shell=True)
+        #filepath = os.path.join(basedir, 'run.py')
+        #cmd = 'python -i ' + filepath
+        #subprocess.call(cmd,shell=True)
 
 
 

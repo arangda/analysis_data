@@ -23,7 +23,7 @@ class file(object):
 
     def allowed_file(self,filename):
         return '.' in filename and \
-               filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
+             filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
     def upload(self, dirs):
         for dr in dirs:
@@ -32,13 +32,16 @@ class file(object):
                 file = request.files.get(dr)
                 if file and self.allowed_file(file.filename):
                     if dr == 'swt' and file.filename.rsplit('.', 1)[1] != 'xls':
-                        # flash("商务通表的后缀要为xls")
+                        flash("商务通表的后缀要为xls")
                         pass
                     elif dr != 'swt' and file.filename.rsplit('.', 1)[1] != 'csv':
-                        # flash("搜索引擎表的后缀要为csv")
+                        flash("搜索引擎表的后缀要为csv")
                         pass
                     else:
                         filename = dr + '.' + file.filename.rsplit('.', 1)[1]
+                        #保存前先删除该目录下所有文件
+                        for d in os.listdir(newdir):
+                            os.remove(os.path.join(newdir,d))
                         file.save(os.path.join(newdir, filename))
                         self.is_right(newdir, filename, dr)
 
@@ -69,9 +72,12 @@ class file(object):
                 flash("你确定上传的表是百度报表吗？")
                 os.remove(fpath)
             else:
-                ptime = time.strptime(df.ix[0][1],"%Y-%m-%d")
-                t = time.strftime("%Y-%m-%d",ptime)
-                self.timelist.append(t)
+                try:
+                    ptime = time.strptime(df.ix[0][1],"%Y-%m-%d")
+                    t = time.strftime("%Y-%m-%d",ptime)
+                    self.timelist.append(t)
+                except ValueError:
+                    flash("时间格式要为%Y-%m-%d")
         if dir == 'sogou':
             df = pd.read_csv(fpath,encoding="GB2312",skiprows=[1])
             stand =['编号', '日期', '账户', '推广计划', '消耗', '点击数', '展示数', '点击率', '点击均价', '有消耗词量']
@@ -80,9 +86,12 @@ class file(object):
                 flash("你确定上传的表是搜狗报表吗？")
                 os.remove(fpath)
             else:
-                ptime = time.strptime(df.ix[0][1].split("至")[0],"%Y-%m-%d")
-                t = time.strftime("%Y-%m-%d",ptime)
-                self.timelist.append(t)
+                try:
+                    ptime = time.strptime(df.ix[0][1].split("至")[0],"%Y-%m-%d")
+                    t = time.strftime("%Y-%m-%d",ptime)
+                    self.timelist.append(t)
+                except ValueError:
+                    flash("时间格式要为%Y-%m-%d")
         if dir == 'shenma':
             df = pd.read_csv(fpath,encoding="GB2312")
             stand =['时间', '账户', '推广计划', '展现量', '点击量', '消费', '点击率', '平均点击价格']
@@ -91,9 +100,12 @@ class file(object):
                 flash("你确定上传的表是神马报表吗？")
                 os.remove(fpath)
             else:
-                ptime = time.strptime(df.ix[0][0],"%Y/%m/%d")
-                t = time.strftime("%Y-%m-%d",ptime)
-                self.timelist.append(t)
+                try:
+                    ptime = time.strptime(df.ix[0][0],"%Y/%m/%d")
+                    t = time.strftime("%Y-%m-%d",ptime)
+                    self.timelist.append(t)
+                except ValueError:
+                    flash("时间格式要为%Y/%m/%d")
 
         if dir == '360':
             df = pd.read_csv(fpath,encoding="GB2312")
@@ -103,9 +115,12 @@ class file(object):
                 flash("你确定上传的表是360报表吗？")
                 os.remove(fpath)
             else:
-                ptime = time.strptime(df.ix[0][0].split("至")[0].strip(),"%Y-%m-%d")
-                t = time.strftime("%Y-%m-%d",ptime)
-                self.timelist.append(t)
+                try:
+                    ptime = time.strptime(df.ix[0][0].split("至")[0].strip(), "%Y-%m-%d")
+                    t = time.strftime("%Y-%m-%d", ptime)
+                    self.timelist.append(t)
+                except ValueError:
+                    flash("时间格式要为%Y-%m-%d")
 
         filename = dir + '_' + t + '.' + fname.rsplit('.', 1)[1]
         newfpath = os.path.join(fdir,filename)
