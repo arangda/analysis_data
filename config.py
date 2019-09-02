@@ -15,6 +15,16 @@ else :
 UPLOAD_FOLDER = os.path.join(basedir, 'uploads/')
 ALLOWED_EXTENSIONS = set(['xls', 'xlsx', 'csv'])
 
+YOUXIAO = {
+    '三句话以内',
+    '无效',
+    '外地',
+    '已就诊',
+    '非诊疗范围',
+    '产科',
+    '否词/广告/自己人'
+}
+
 JIHUA = {
     'baidu':
     {

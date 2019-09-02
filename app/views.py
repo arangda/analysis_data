@@ -18,6 +18,7 @@ def index():
     dt = f.walk(f.dirs)
     msg = "先上传商务通和各搜索引擎的导出数据"
 
+
     if request.method == 'POST':
         if request.form.get('analysis'):
             is_swt = True if dt['swt'][0] == f.error_exist else False
@@ -56,28 +57,28 @@ def data():
         f.read_swt = f.read_swts()
     #如果没有上传搜索引擎的表，则自定义一个dataframe
     if is_baidu:
-        baidu_account = pd.DataFrame({'账户':'0','展现':0.0, '点击':0.0,'消费':0.0,'对话':0.0, '转出':0.0},index=['百度汇总'])
+        baidu_account = pd.DataFrame({'账户':'0','展现':0.0, '点击':0.0,'消费':0.0,'对话':0.0, '转出': 0.0, '有效': 0.0},index=['百度汇总'])
         baidu_plan = baidu_account
     else:
         baidu_account = f.read_baidu()['account']
         baidu_plan = f.read_baidu()['plan']
 
     if is_sogou:
-        sogou_account = pd.DataFrame({'账户':'0','展现':0.0, '点击':0.0,'消费':0.0,'对话':0.0, '转出':0.0},index=['搜狗汇总'])
+        sogou_account = pd.DataFrame({'账户':'0','展现':0.0, '点击':0.0,'消费':0.0,'对话':0.0, '转出':0.0, '有效': 0.0},index=['搜狗汇总'])
         sogou_plan = sogou_account
     else:
         sogou_account = f.read_sogou()['account']
         sogou_plan = f.read_sogou()['plan']
 
     if is_shenma:
-        shenma_account = pd.DataFrame({'账户':'0','展现':0.0, '点击':0.0,'消费':0.0,'对话':0.0, '转出':0.0},index=['神马汇总'])
+        shenma_account = pd.DataFrame({'账户':'0','展现':0.0, '点击':0.0,'消费':0.0,'对话':0.0, '转出':0.0, '有效': 0.0},index=['神马汇总'])
         shenma_plan = shenma_account
     else:
         shenma_account = f.read_shenma()['account']
         shenma_plan = f.read_shenma()['plan']
 
     if is_360:
-        d360_account = pd.DataFrame({'账户':'0','展现':0.0, '点击':0.0,'消费':0.0,'对话':0.0, '转出':0.0},index=['360汇总'])
+        d360_account = pd.DataFrame({'账户':'0','展现':0.0, '点击':0.0,'消费':0.0,'对话':0.0, '转出':0.0, '有效': 0.0},index=['360汇总'])
         d360_plan = d360_account
     else:
         d360_account = f.read_360()['account']
@@ -85,11 +86,11 @@ def data():
 
 
     hz_account = pd.DataFrame([baidu_account.loc['百度汇总'],sogou_account.loc['搜狗汇总'],shenma_account.loc['神马汇总'],d360_account.loc['360汇总']])
-    hz_account.loc['大汇总'] = hz_account[['展现', '点击', '消费', '对话', '转出']].apply(lambda x: x.sum())
+    hz_account.loc['大汇总'] = hz_account[['展现', '点击', '消费', '对话', '转出', '有效']].apply(lambda x: x.sum())
     hz_account = hz_account.fillna('0')
 
     hz_plan = pd.DataFrame([baidu_plan.loc['百度汇总'],sogou_plan.loc['搜狗汇总'],shenma_plan.loc['神马汇总'],d360_plan.loc['360汇总']])
-    hz_plan.loc['大汇总'] = hz_plan[['展现', '点击', '消费', '对话', '转出']].apply(lambda x: x.sum())
+    hz_plan.loc['大汇总'] = hz_plan[['展现', '点击', '消费', '对话', '转出', '有效']].apply(lambda x: x.sum())
     hz_plan = hz_plan.fillna('0')
     return render_template('data.html',
                            now=int(time.time()),

@@ -7,7 +7,7 @@ from flask import request, flash
 import numpy as np
 
 from app import app
-from config import ALLOWED_EXTENSIONS, UPLOAD_FOLDER, JIHUA
+from config import ALLOWED_EXTENSIONS, UPLOAD_FOLDER, JIHUA,YOUXIAO
 pd.set_option('display.max_columns', 1000)
 
 class file(object):
@@ -158,15 +158,16 @@ class file(object):
         how = {}
         res = self.if_file('swt')
         if 'filepath' in res:
-            df = pd.read_excel(res['filepath'], sheet_name=0, usecols="A,D,E,F,G", skiprows=[0, 1, 2], names=['A', 'D', 'E', 'F', 'G'])
+            df = pd.read_excel(res['filepath'], sheet_name=0, usecols="A,D,E,F,G,I", skiprows=[0, 1], names=['A', 'D', 'E', 'F', 'G','I'])
             df['engine'] = df.apply(self.what_engine, axis=1)
             df['zhuan'] = df.apply(self.is_zhuan, axis=1)
+            df['youxiao'] = df.apply(self.is_youxiao, axis=1)
             df['account'] = df.apply(self.what_account, axis=1)
             dff = df['account'].str.rsplit('&', expand=True, n=1)
             dff2 = dff.rename(columns={0:'acc',1: 'plan'})
             df = pd.merge(df,dff2,how='left',left_index=True,right_index=True)
-            how['account'] = df.groupby(['acc']).agg({'D': 'size', 'zhuan': 'sum'}) #按账户分组
-            how['plan'] = df.groupby(['plan']).agg({'D': 'size', 'zhuan': 'sum'})  # 按计划分组
+            how['account'] = df.groupby(['acc']).agg({'D': 'size', 'zhuan': 'sum','youxiao':'sum'}) #按账户分组
+            how['plan'] = df.groupby(['plan']).agg({'D': 'size', 'zhuan': 'sum','youxiao':'sum'})  # 按计划分组
             #print(how['plan'])
             #account = ['xa-lhszyy','xa-qlx','xa-lhyy','xa-lhxm','xa-lhyy66','xa-lhqg','cm_029866a@sohu.com','cm_120sxnk@sohu.com','cm_nkywyy@sohu.com','xa-zhifk','xa-shengfk','xa-shengzhi','莲湖生殖妇科1','莲湖生殖妇科','美柚']
             #for ac in account:
@@ -181,6 +182,13 @@ class file(object):
     def is_zhuan(self,data):
         zc = str(data['G'])
         if '转' in zc:
+            return 1
+
+    def is_youxiao(self, data):
+        yx = str(data['I'])
+        if yx in YOUXIAO:
+            return 0
+        else:
             return 1
     def what_engine(self, data):
         eg = str(data['D'])
@@ -261,12 +269,16 @@ class file(object):
         else:
             if engine == 'baidu':
                 flash('没有找到计划baidu:' + x)
+                return('没有找到计划baidu:' + x)
             if engine == 'sogou':
                 flash('没有找到计划sogou:' + x)
+                return('没有找到计划sogou:' + x)
             if engine == 'shenma':
                 flash('没有找到计划shenma:' + x)
+                return('没有找到计划sogou:' + x)
             if engine == '360':
                 flash('没有找到计划360:' + x)
+                return('没有找到计划sogou:' + x)
             return '没有找到计划'
 
     def read_baidu(self):
@@ -282,12 +294,12 @@ class file(object):
         #print(df.head())
         print("****百度****")
         newdf1 = df.groupby('账户',as_index=False).agg({'展现':np.sum,'点击':np.sum,'消费':np.sum})
-        newdf1[['对话', '转出']] = newdf1.apply(self.newcols, args=('账户',), axis=1)
-        newdf1.loc['百度汇总'] = newdf1[['展现', '点击','消费','对话', '转出']].apply(lambda x: x.sum())
+        newdf1[['对话', '转出', '有效']] = newdf1.apply(self.newcols, args=('账户',), axis=1)
+        newdf1.loc['百度汇总'] = newdf1[['展现', '点击','消费','对话', '转出','有效']].apply(lambda x: x.sum())
 
         newdf2 = df.groupby(['计划'], as_index=False).agg({'展现':np.sum,'点击':np.sum,'消费':np.sum})
-        newdf2[['对话', '转出']] = newdf2.apply(self.newcols, args=('计划',), axis=1)
-        newdf2.loc['百度汇总'] = newdf2[['展现', '点击','消费','对话', '转出']].apply(lambda x: x.sum())
+        newdf2[['对话', '转出', '有效']] = newdf2.apply(self.newcols, args=('计划',), axis=1)
+        newdf2.loc['百度汇总'] = newdf2[['展现', '点击','消费','对话', '转出','有效']].apply(lambda x: x.sum())
         #print(newdf2)
         #newdf = newdf.fillna(0)
         how['account'] = newdf1
@@ -309,12 +321,12 @@ class file(object):
         #print(df)
         #print("****搜狗****")
         newdf = df.groupby('账户',as_index=False).agg({'展现':np.sum,'点击':np.sum,'消费':np.sum})
-        newdf[['对话', '转出']] = newdf.apply(self.newcols, args=('账户',), axis=1)
-        newdf.loc['搜狗汇总'] = newdf[['展现', '点击','消费','对话', '转出']].apply(lambda x: x.sum())
+        newdf[['对话', '转出', '有效']] = newdf.apply(self.newcols, args=('账户',), axis=1)
+        newdf.loc['搜狗汇总'] = newdf[['展现', '点击','消费','对话', '转出', '有效']].apply(lambda x: x.sum())
 
         newdf2 = df.groupby(['计划'], as_index=False).agg({'展现': np.sum, '点击': np.sum, '消费': np.sum})
-        newdf2[['对话', '转出']] = newdf2.apply(self.newcols, args=('计划',), axis=1)
-        newdf2.loc['搜狗汇总'] = newdf2[['展现', '点击', '消费', '对话', '转出']].apply(lambda x: x.sum())
+        newdf2[['对话', '转出', '有效']] = newdf2.apply(self.newcols, args=('计划',), axis=1)
+        newdf2.loc['搜狗汇总'] = newdf2[['展现', '点击', '消费', '对话', '转出', '有效']].apply(lambda x: x.sum())
 
         #newdf = newdf.fillna(0)
         how['account'] = newdf
@@ -333,12 +345,12 @@ class file(object):
         df['计划'] = 'shenma$' + df['计划']
         print("****神马****")
         newdf = df.groupby('账户',as_index=False).agg({'展现':np.sum,'点击':np.sum,'消费':np.sum})
-        newdf[['对话', '转出']] = newdf.apply(self.newcols,  args=('账户',), axis=1)
-        newdf.loc['神马汇总'] = newdf[['展现', '点击','消费','对话', '转出']].apply(lambda x: x.sum())
+        newdf[['对话', '转出', '有效']] = newdf.apply(self.newcols,  args=('账户',), axis=1)
+        newdf.loc['神马汇总'] = newdf[['展现', '点击','消费','对话', '转出', '有效']].apply(lambda x: x.sum())
 
         newdf2 = df.groupby(['计划'], as_index=False).agg({'展现': np.sum, '点击': np.sum, '消费': np.sum})
-        newdf2[['对话', '转出']] = newdf2.apply(self.newcols, args=('计划',), axis=1)
-        newdf2.loc['神马汇总'] = newdf2[['展现', '点击', '消费', '对话', '转出']].apply(lambda x: x.sum())
+        newdf2[['对话', '转出', '有效']] = newdf2.apply(self.newcols, args=('计划',), axis=1)
+        newdf2.loc['神马汇总'] = newdf2[['展现', '点击', '消费', '对话', '转出', '有效']].apply(lambda x: x.sum())
 
         newdf = newdf.fillna(0)
         how['account'] = newdf
@@ -357,12 +369,12 @@ class file(object):
         df['计划'] = '360$' + df['计划']
         print("****360****")
         newdf = df.groupby('账户', as_index=False).agg({'展现':np.sum,'点击':np.sum,'消费':np.sum})
-        newdf[['对话','转出']] = newdf.apply(self.newcols, args=('账户',), axis=1)
-        newdf.loc['360汇总'] = newdf[['展现', '点击','消费','对话', '转出']].apply(lambda x: x.sum())
+        newdf[['对话','转出', '有效']] = newdf.apply(self.newcols, args=('账户',), axis=1)
+        newdf.loc['360汇总'] = newdf[['展现', '点击','消费','对话', '转出', '有效']].apply(lambda x: x.sum())
 
         newdf2 = df.groupby(['计划'], as_index=False).agg({'展现': np.sum, '点击': np.sum, '消费': np.sum})
-        newdf2[['对话', '转出']] = newdf2.apply(self.newcols, args=('计划',), axis=1)
-        newdf2.loc['360汇总'] = newdf2[['展现', '点击', '消费', '对话', '转出']].apply(lambda x: x.sum())
+        newdf2[['对话', '转出', '有效']] = newdf2.apply(self.newcols, args=('计划',), axis=1)
+        newdf2.loc['360汇总'] = newdf2[['展现', '点击', '消费', '对话', '转出', '有效']].apply(lambda x: x.sum())
 
         newdf = newdf.fillna(0)
         how['account'] = newdf
@@ -379,7 +391,7 @@ class file(object):
         if hang[index] in swt.index:
             return swt.loc[hang[index]]
         else:
-            return pd.Series([0, 0], index=['D', 'zhuan'])
+            return pd.Series([0, 0, 0], index=['D', 'zhuan','youxiao'])
 
 
 
@@ -387,8 +399,10 @@ class file(object):
 if __name__ == '__main__':
     f = file()
     f.read_swt = f.read_swts()
-    #baidu = f.read_baidu()
-    sogou = f.read_sogou()
+    #print(f.read_swt)
+    baidu = f.read_baidu()
+    #print(baidu)
+    #sogou = f.read_sogou()
     #shenma = f.read_shenma()
     #d360 = f.read_360()
     #hz = pd.DataFrame([baidu.loc['百度汇总'],sogou.loc['搜狗汇总'],shenma.loc['神马汇总'],d360.loc['360汇总']])
